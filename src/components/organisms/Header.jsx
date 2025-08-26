@@ -1,14 +1,18 @@
-import { useState } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import Button from "@/components/atoms/Button"
-import SearchBar from "@/components/molecules/SearchBar"
-import ApperIcon from "@/components/ApperIcon"
-import { motion, AnimatePresence } from "framer-motion"
+import React, { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AnimatePresence, motion } from "framer-motion";
+import { AuthContext } from "../../App";
+import ApperIcon from "@/components/ApperIcon";
+import SearchBar from "@/components/molecules/SearchBar";
+import Button from "@/components/atoms/Button";
 
 const Header = ({ onSearch, onToggleFilters }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { logout } = useContext(AuthContext)
+  const { user, isAuthenticated } = useSelector((state) => state.user)
 
   const handleSearch = (query) => {
     if (onSearch) {
@@ -25,6 +29,11 @@ const Header = ({ onSearch, onToggleFilters }) => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false)
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    closeMobileMenu()
   }
 
   const navItems = [
@@ -57,7 +66,7 @@ const Header = ({ onSearch, onToggleFilters }) => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+<nav className="hidden md:flex items-center space-x-1">
             {navItems.map(item => (
               <Link
                 key={item.path}
@@ -72,20 +81,39 @@ const Header = ({ onSearch, onToggleFilters }) => {
                 <span>{item.label}</span>
               </Link>
             ))}
-            
-            {/* Filters Button */}
+          </nav>
+
+          {/* Desktop User Menu */}
+          <div className="hidden md:flex items-center space-x-3">
+            {isAuthenticated && user && (
+              <div className="text-sm text-gray-600">
+                Welcome, {user.firstName || user.name || 'User'}
+              </div>
+            )}
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <ApperIcon name="LogOut" className="w-4 h-4" />
+              <span>Logout</span>
+            </Button>
+</div>
+
+          {/* Filters Button */}
+          <div className="hidden md:flex">
             {location.pathname === "/" && (
               <Button
                 variant="ghost"
                 onClick={onToggleFilters}
-                className="flex items-center space-x-2 md:hidden lg:flex"
+                className="flex items-center space-x-2"
               >
                 <ApperIcon name="SlidersHorizontal" className="w-4 h-4" />
                 <span>Filters</span>
               </Button>
             )}
-          </nav>
-
+          </div>
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
             {location.pathname === "/" && (
@@ -141,8 +169,7 @@ const Header = ({ onSearch, onToggleFilters }) => {
                     <ApperIcon name="X" className="w-4 h-4" />
                   </Button>
                 </div>
-                
-                <nav className="space-y-4">
+<nav className="space-y-4">
                   {navItems.map(item => (
                     <Link
                       key={item.path}
@@ -159,6 +186,23 @@ const Header = ({ onSearch, onToggleFilters }) => {
                     </Link>
                   ))}
                 </nav>
+
+                {/* Mobile User Info & Logout */}
+                <div className="pt-6 mt-6 border-t border-gray-200">
+                  {isAuthenticated && user && (
+                    <div className="px-4 py-2 text-sm text-gray-600 mb-4">
+                      Welcome, {user.firstName || user.name || 'User'}
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    className="w-full flex items-center justify-center space-x-2"
+                  >
+                    <ApperIcon name="LogOut" className="w-4 h-4" />
+                    <span>Logout</span>
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </>
