@@ -1,9 +1,9 @@
-// Header import removed - no longer using inner header section
+import React from 'react'
 
 const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-background">
-{/* Inner header section removed as requested */}
+{/* Main content area */}
       <main className="flex-1">
         {children}
       </main>
