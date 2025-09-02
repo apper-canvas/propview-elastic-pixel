@@ -1,9 +1,9 @@
-import Header from "@/components/organisms/Header"
+// Header import removed - no longer using inner header section
 
-const Layout = ({ children, onSearch, onToggleFilters }) => {
+const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-background">
-      <Header onSearch={onSearch} onToggleFilters={onToggleFilters} />
+{/* Inner header section removed as requested */}
       <main className="flex-1">
         {children}
       </main>
